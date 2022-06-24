@@ -10,7 +10,7 @@ let floorplanCount;
 let x, x1, count;
 let loop, bigRoom;
 let maxloop = 2, maxBigRoom = 3,abc = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-let seed = "MACHINARIUM";
+let seed = makeseed();
 let seedNum = "";
 for (let j=0;(j<seed.length && j < 8);j++) {
   seedNum += abc.indexOf(seed[j]);
@@ -18,6 +18,13 @@ for (let j=0;(j<seed.length && j < 8);j++) {
 console.log(seedNum)
 seedNum = new Random(+seedNum);
 
+function makeseed() {
+  let seed = "";
+  for (let j=0;j<8;j++) {
+    seed += abc[Math.floor(Math.random()*abc.length)];
+  }
+  return seed;
+} 
 function start() {
 floorFill(floorplan);
 floorplanCount = 0;

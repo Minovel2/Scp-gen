@@ -9,9 +9,8 @@ let placed;
 let floorplanCount;
 let x, x1, count;
 let loop, bigRoom;
-let maxloop = 2, maxBigRoom = 3, abc = "0123456789ABCDEFGHJKLMNPQRSTWXYZ";
-
-let seed = "AB0BA";
+let maxloop = 2, maxBigRoom = 3,abc = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+let seed = "MACHINARIUM";
 let seedNum = "";
 for (let j=0;(j<seed.length && j < 8);j++) {
   seedNum += abc.indexOf(seed[j]);
@@ -115,7 +114,7 @@ function visit(j) {
     }
     else if (floorplan[j] > 1) {
     nAdd(j);
-    floorplan[j] = 7;
+    floorplan[j] = 5;
     loop++;
     } }
      if (floorplan[j] < 2)
@@ -125,7 +124,7 @@ function visit(j) {
 function bigR(j) {
   if (bigRoom < maxBigRoom && floorplan[j] == 2) {
     bigRoom++;
-    nAdd(j,8);
+    nAdd(j,5);
   }
 }
 function dock() {
@@ -141,31 +140,61 @@ function floorFill(arr) {
   arr[j] = 0;
 }}
 function Random(seed) {
-  seed = (seed || 1) % 2147483647;
+  seed = (seed || 9) % 2147483647;
   return {
     next: function() {
       return seed = seed * 48271 % 2147483647;
     },
   };
 };
-function random() {
-  let num1 = `${seedNum.next()}`,num2 = `${seedNum.next()}`,sub1 = num1.substring(num1.length-2),sub2 = num2.substring(num2.length-2);
-  let res1 = `${sub1[0]}${num1.substring(1,num1.length-2)}${sub1[1]}`,res2 = `${sub2[0]}${num2.substring(1,num2.length-2)}${sub2[1]}`
-  return parseFloat(`0.${res1}${res2}`);
+function random(n = true) {
+  let num1 = `${seedNum.next()}`,num2 = `${seedNum.next()}`;
+  let res = parseFloat(`0.${num1[num1.length-2]}${num2[num2.length-2]}${num1[num1.length-4]}${num2[num2.length-4]}`);
+  if (n === true)
+  return res
+  return Math.floor(res*n);
 }
-
+function map1(arr,num,min = 1,max = min) {
+  for (let j=0;j < random(max-min+1)+min;j++) {
+  floorplan[arr.splice(random(arr.length),1)] = num;
+  }
+}
+function mapping() {
+  map1(endrooms,0);
+floorplan[endrooms.pop()] = 1;
+floorplan[endrooms.shift()] = 1;
+  if (random < 0.5)
+  map1(triple,2);
+  else map1(straight,2);
+  map1(endrooms,3);
+  map1(straight,4);
+  map1(endrooms,6);
+  map1(endrooms,7);
+  map1(endrooms,8);
+  map1(endrooms,9);
+  map1(straight,10,1,3);
+  map1(straight,11,2,5);
+}
+let straight = [], triple = [];
 start();
 dock();
 for (let j = 0; j < 100; j++) {
-  if (floorplan[j] == 5 && nCount(j)) {
-  floorplan[j] = 6;
+  if (floorplan[j] == 5 && nCount(j))
   endrooms.push(j);
-}
+  if (docking[j] == 5 || docking[j] == 10)
+  straight.push(j);
+  if (docking[j] == 14 || docking[j] == 13 || docking[j] == 11 || docking[j] == 7)
+  triple.push(j);
   if (floorplan[j] < 5)
   floorplan[j] = " ";
   docking[j] = abc[docking[j]];
   if (docking[j] == 0)
   docking[j] = " ";
+}
+mapping();
+for (let i=0;i<100;i++) {
+  if (floorplan[i] !== " ")
+floorplan[i] = abc[floorplan[i]];
 }
 console.log("Карта:");
 for (let j = 0; j < floorplan.length; j += 10) {
@@ -173,7 +202,6 @@ for (let j = 0; j < floorplan.length; j += 10) {
 }
 console.log(`Сид: ${seed}, Колец: ${loop}`);
 console.log("Биг рум: " + bigRoom);
-console.log("Конечные комнаты: " + endrooms);
 console.log("Количество: " + floorplanCount);
 console.log("Схема стыковки: ");
 for (let j = 0; j < docking.length; j += 10) {

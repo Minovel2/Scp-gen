@@ -1,32 +1,35 @@
-let startRoom = 45;
-let floorplan = [], docking = [];
-let i;
-let ochered = [];
-let endrooms = [];
+let startRoom = 45,seedNum,degr = [0,1,0,2,0,1,0,3,3,1,3,2,2,1,0],abc = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",floorplan = [], docking = [],i,ochered = [],endrooms = [],placed,floorplanCount,x, x1, count,loop, bigRoom,maxloop = 2, maxBigRoom = 3;
 let maxrooms = 50;
 let minrooms = 20;
-let placed;
-let floorplanCount;
-let x, x1, count;
-let loop, bigRoom;
-let maxloop = 2, maxBigRoom = 3,abc = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-let seed = makeseed();
-let seedNum = "";
-for (let j=0;(j<seed.length && j < 8);j++) {
-  seedNum += abc.indexOf(seed[j]);
-}
-console.log(seedNum)
-seedNum = new Random(+seedNum);
 
-function makeseed() {
-  let seed = "";
-  for (let j=0;j<8;j++) {
-    seed += abc[Math.floor(Math.random()*abc.length)];
-  }
-  return seed;
-} 
+            let seed = "XVZJM9EG";
+            seedNum = "";
+            for (let j=0;(j<seed.length && j < 8);j++)
+            seedNum += abc.indexOf(seed[j]);
+            seedNum = new Random(+seedNum);
+            start();
+            dock();
+            mapping();
+            for (let i=0;i<100;i++) {
+  if (floorplan[i] !== " ")
+floorplan[i] = abc[floorplan[i]];
+}
+console.log("Карта:");
+for (let j = 0; j < floorplan.length; j += 10) {
+  console.log(floorplan.slice(j, j + 10));
+}
+console.log(`Сид: ${seed}, Колец: ${loop}`);
+console.log("Биг рум: " + bigRoom);
+console.log("Количество: " + floorplanCount);
+console.log("Схема стыковки: ");
+for (let j = 0; j < docking.length; j += 10) {
+  console.log(docking.slice(j, j + 10));
+}
+
 function start() {
-floorFill(floorplan);
+  for (let j = 0; j < 100; j++) {
+  floorplan[j] = 0;
+}
 floorplanCount = 0;
 endrooms.length = 0;
 nAdd(startRoom);
@@ -38,7 +41,6 @@ ochered = [startRoom];
   i = ochered.shift();
   placed = false;
   x = i % 10; 
-  
    if (x > 0) 
    visit(i - 1);
    if (x < 9) 
@@ -129,9 +131,9 @@ function visit(j) {
     return;
 }
 function bigR(j) {
-  if (bigRoom < maxBigRoom && floorplan[j] == 2) {
+  if (bigRoom < maxBigRoom && random() < 0.6 && floorplan[j] == 2) {
     bigRoom++;
-    nAdd(j,5);
+    nAdd(j);
   }
 }
 function dock() {
@@ -142,10 +144,6 @@ function dock() {
     line(x1,j,() => docking[j] += 8,() => docking[j] += 2,() => docking[j] += 1,() => docking[j] += 4);
   }
 }
-function floorFill(arr) {
-  for (let j = 0; j < 100; j++) {
-  arr[j] = 0;
-}}
 function Random(seed) {
   seed = (seed || 9) % 2147483647;
   return {
@@ -167,6 +165,20 @@ function map1(arr,num,min = 1,max = min) {
   }
 }
 function mapping() {
+    let straight = [], triple = [];
+    for (let j = 0; j < 100; j++) {
+  if (floorplan[j] == 5 && nCount(j))
+  endrooms.push(j);
+  if (docking[j] == 5 || docking[j] == 10)
+  straight.push(j);
+  if (docking[j] == 14 || docking[j] == 13 || docking[j] == 11 || docking[j] == 7)
+  triple.push(j);
+  if (floorplan[j] < 5)
+  floorplan[j] = " ";
+  docking[j] = abc[docking[j]];
+  if (docking[j] == 0)
+  docking[j] = " ";
+}
   map1(endrooms,0);
 floorplan[endrooms.pop()] = 1;
 floorplan[endrooms.shift()] = 1;
@@ -181,36 +193,4 @@ floorplan[endrooms.shift()] = 1;
   map1(endrooms,9);
   map1(straight,10,1,3);
   map1(straight,11,2,5);
-}
-let straight = [], triple = [];
-start();
-dock();
-for (let j = 0; j < 100; j++) {
-  if (floorplan[j] == 5 && nCount(j))
-  endrooms.push(j);
-  if (docking[j] == 5 || docking[j] == 10)
-  straight.push(j);
-  if (docking[j] == 14 || docking[j] == 13 || docking[j] == 11 || docking[j] == 7)
-  triple.push(j);
-  if (floorplan[j] < 5)
-  floorplan[j] = " ";
-  docking[j] = abc[docking[j]];
-  if (docking[j] == 0)
-  docking[j] = " ";
-}
-mapping();
-for (let i=0;i<100;i++) {
-  if (floorplan[i] !== " ")
-floorplan[i] = abc[floorplan[i]];
-}
-console.log("Карта:");
-for (let j = 0; j < floorplan.length; j += 10) {
-  console.log(floorplan.slice(j, j + 10));
-}
-console.log(`Сид: ${seed}, Колец: ${loop}`);
-console.log("Биг рум: " + bigRoom);
-console.log("Количество: " + floorplanCount);
-console.log("Схема стыковки: ");
-for (let j = 0; j < docking.length; j += 10) {
-  console.log(docking.slice(j, j + 10));
 }

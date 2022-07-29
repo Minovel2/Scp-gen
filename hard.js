@@ -8,7 +8,7 @@ for (let j=0;(j<seed.length && j < 8);j++)
 seedNum += abc.indexOf(seed[j]);
 seedNum = new Random(+seedNum);
 let mode;
-gen(1);
+gen(0);
 gen(1);
 
 function gen(n) {

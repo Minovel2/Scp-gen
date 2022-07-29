@@ -19,10 +19,13 @@ function gen(n) {
   showMap();
 }
 
-function start() {
-  for (let j = 0; j < 100; j++) {
-  floorplan[j] = 0;
+function floor(f,j = 1) {
+    for (let i=0; i<100; i+=j)
+    f(i);
 }
+
+function start() {
+floor((i) => floorplan[i] = 0);
 floorplanCount = [0,0,0,0];
 endrooms.length = 0;
 type.length = 0;
@@ -55,11 +58,13 @@ if (mode==1) hard(startRoom);
   }
 }
 
-function boolSide() {
-  let roomC = 0;
-  for (let i = 0; i < 10; i++) {
-    if (nCount(i*10 + 9) && floorplan[i*10+8] == 5 && floorplan[i*10 + 9] == 5)
-    roomC++;
+function boolSide(num = 13) {
+    let roomC = 0;
+  for (let i = 0; (i < 10 && roomC < 2); i++) {
+    if (nCount(i*10 + 9) && floorplan[i*10+8] == 5 && floorplan[i*10 + 9] == 5) {
+        roomC++;
+        floorplan[i*10 + 9] = num;
+    }
   }
   if (roomC > 1) return true;
   else return false;
@@ -80,26 +85,20 @@ function hard(i) {
 }
 
 function showMap() {
-            for (let i=0;i<100;i++) {
-  if (floorplan[i] !== " ")
+floor((i) => {
+    if (floorplan[i] !== " ")
 floorplan[i] = abc[floorplan[i]];
 if (type[i] == undefined) type[i] = " ";
-}
+});
 console.log("Типы:");
-for (let j = 0; j < type.length; j += 10) {
-  console.log(type.slice(j, j + 10));
-}
+floor((j) => console.log(type.slice(j, j + 10)),10);
 console.log("Карта:");
-for (let j = 0; j < floorplan.length; j += 10) {
-  console.log(floorplan.slice(j, j + 10));
-}
+floor((j) => console.log(floorplan.slice(j, j + 10)),10);
 console.log(`Сид: ${seed}, Колец: ${loop}`);
 console.log("Биг рум: " + bigRoom);
-console.log("Количество: " + floorplanCount);
+console.log("Количество: " + floorplanCount[3]);
 console.log("Схема стыковки: ");
-for (let j = 0; j < docking.length; j += 10) {
-  console.log(docking.slice(j, j + 10));
-}}
+floor((j) => console.log(docking.slice(j, j + 10)),10);}
 
 function nAdd(i,type1 = 0) {
     floorplan[i] = 5;
@@ -195,12 +194,12 @@ function bigR(j,from) {
   }
 }
 function dock() {
-  for (let j=0;j<100;j++) {
-    x1 = j % 10;
+  floor((j) => {
+      x1 = j % 10;
     docking[j] = 0;
     if (floorplan[j] > 4)
     line(floorplan,5,x1,j,() => docking[j] += 8,() => docking[j] += 2,() => docking[j] += 1,() => docking[j] += 4);
-  }
+  });
 }
 function Random(seed) {
   seed = (seed || 9) % 2147483647;
@@ -237,11 +236,11 @@ function mapping() {
   if (docking[j] == 0)
   docking[j] = " ";
 }
-if (mode==0) {
+if (mode == 0) {
   map1(endrooms,0);
 floorplan[endrooms.pop()] = 1;
 floorplan[endrooms.shift()] = 1;
-  if (random < 0.5)
+  if (triple.length > straight.length)
   map1(triple,2);
   else map1(straight,2);
   map1(endrooms,3);
@@ -252,5 +251,23 @@ floorplan[endrooms.shift()] = 1;
   map1(endrooms,9);
   map1(straight,10,1,3);
   map1(straight,11,2,5);
+  }
+  if (mode == 1) {
+      floorplan[startRoom] = 18;
+      floorplan[endrooms.pop()] = 14;
+      floorplan[endrooms.shift()] = 14;
+      map1(endrooms,15);
+      map1(straight,16);
+      map1(straight,17,2);
+      map1(endrooms,19);
+      map1(straight,20,0,3);
+      map1(straight,21);
+      map1(straight,22);
+      map1(triple,23,0,1);
+      map1(endrooms,24,0,1);
+      floor((i) => {
+          if (floorplan[i] == 5)
+          floorplan[i] = 12;
+      });
   }
 }

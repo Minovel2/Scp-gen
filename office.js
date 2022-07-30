@@ -66,9 +66,7 @@ if (mode == 2) type[startRoom] = obmen[2];
     if (floorplan[obmen[0]-9] != 5 || floorplan[obmen[1]-9] != 5|| !nCount(obmen[0]-9) || !nCount(obmen[1]-9) || floorplan[obmen[1]-8] != 5 || floorplan[obmen[0]-8] != 5) {
     start.apply(this);
     return;
-  }
-  console.log(obmen)
-  }
+  }}
 }
 
 function boolSide(num = 0) {

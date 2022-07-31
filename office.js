@@ -237,7 +237,6 @@ function map1(arr,num,min = 1,max = min) {
   }
 }
 function mapping() {
-  
     let straight = [], triple = [],corner = [];
     for (let j = 0; j < 100; j++) {
   if (floorplan[j] == 5 && nCount(j))

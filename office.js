@@ -33,7 +33,7 @@ type.length = 0;
 ochered.length = 0;
 nAdd(startRoom);
 if (mode == 1) hard(startRoom);
-if (mode == 2) type[startRoom] = obmen[2];
+if (mode == 2) type[startRoom] = obmen[0];
   
   loop = 0;
   bigRoom = 0;
@@ -55,34 +55,46 @@ if (mode == 2) type[startRoom] = obmen[2];
   return;
   }
   if (mode == 1) {
-    let arr = boolSide(13);
+    let arr = arrSide(13);
     if (Math.abs(floorplanCount[1] - floorplanCount[2]) > 10 || arr.length < 2 || type[arr[0]] != type[arr[1]]) {
   start.apply(this);
   return;
   }
-  obmen = [...arr,type[arr[0]]];
+  obmen = [type[arr[0]+9],...arr];
   }
   if (mode == 2) {
-    if (floorplan[obmen[0]-9] != 5 || floorplan[obmen[1]-9] != 5|| !nCount(obmen[0]-9) || !nCount(obmen[1]-9) || floorplan[obmen[1]-8] != 5 || floorplan[obmen[0]-8] != 5) {
+    if (floorplan[obmen[1]] != 5 || floorplan[obmen[2]] != 5|| !nCount(obmen[1]) || !nCount(obmen[2]) || floorplan[obmen[2]+1] != 5 || floorplan[obmen[1]+1] != 5) {
     start.apply(this);
     return;
   }}
 }
 
-function boolSide(num = 0) {
-    let roomC = [];
-  for (let i = 0;(i < 10 && roomC.length < 2); i++) {
+function arrSide(num) {
+    let room1 = [],room2 = [];
+  for (let i = 0;i < 10; i++) {
     if (nCount(i*10 + 9) && floorplan[i*10+8] == 5 && floorplan[i*10 + 9] == 5) {
-        roomC.push(i*10 + 9);
-        if (num) floorplan[i*10 + 9] = num;
+        if (type[i*10+9] == 1) room1.push(i*10);
+        if (type[i*10+9] == 2) room2.push(i*10);
     }
   }
-  return roomC;
+  if (room1.length < 2 && room2.length < 2) return [0];
+  let arr = room2.length >= room1.length ? room2 : room1;
+  shuffle(arr);
+  floorplan[arr[0] + 9] = num;
+  floorplan[arr[1] + 9] = num;
+  return arr;
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = random(i+1);
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
 function hard(i) {
   ochered.shift();
-  let arr = [-10,1,10,-1,-10],num = Math.floor(random(4));
+  let arr = [-10,1,10,-1,-10],num = random(4);
   nAdd(i+arr[num],2);
   nAdd(i+arr[num+1],1);
 }
@@ -212,10 +224,10 @@ function Random(seed) {
     },
   };
 };
-function random(n = true) {
+function random(n = 0) {
   let num1 = `${seedNum.next()}`,num2 = `${seedNum.next()}`;
   let res = parseFloat(`0.${num1[num1.length-2]}${num2[num2.length-2]}${num1[num1.length-4]}${num2[num2.length-4]}`);
-  if (n === true)
+  if (!n)
   return res
   return Math.floor(res*n);
 }
@@ -225,6 +237,7 @@ function map1(arr,num,min = 1,max = min) {
   }
 }
 function mapping() {
+  
     let straight = [], triple = [],corner = [];
     for (let j = 0; j < 100; j++) {
   if (floorplan[j] == 5 && nCount(j))
@@ -276,8 +289,8 @@ floorplan[endrooms.shift()] = 1;
       });
   }
   if (mode == 2) {
-      floorplan[obmen[0] - 9] = 26;
-      floorplan[obmen[1] - 9] = 26;
+      floorplan[endrooms.splice(endrooms.indexOf(obmen[1]),1)] = 26;
+      floorplan[endrooms.splice(endrooms.indexOf(obmen[2]),1)] = 26;
       map1(endrooms,27);
       map1(endrooms,28);
       map1(endrooms,29);
@@ -291,7 +304,7 @@ floorplan[endrooms.shift()] = 1;
           floorplan[i] = 25;
       });
       for (let i=0; i < endrooms.length; i++) {
-        floorplan[endrooms[i]] = Math.floor(random(2))+30;
+        floorplan[endrooms[i]] = random(2)+30;
       }
   }
 }

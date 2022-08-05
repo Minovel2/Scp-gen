@@ -1,8 +1,8 @@
-let startRoom = 45,type = [],obmen = [],seedNum,degr = [0,1,0,2,0,1,0,3,3,1,3,2,2,1,0],abc = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",floorplan = [], docking = [],i,ochered = [],endrooms = [],placed,floorplanCount,x, x1, count,loop, bigRoom,maxloop = 2, maxBigRoom = 3;
+let startRoom = 45,type = [],obmen = [],seedNum,degr = [0,1,0,2,0,1,0,3,3,1,3,2,2,1,0],abc = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЬьЫыЭэЮюЯя",floorplan = [], docking = [],i,ochered = [],endrooms = [],floorplanCount,x, x1, count,loop, bigRoom,maxloop = 2, maxBigRoom = 3;
 let maxrooms = 50;
 let minrooms = 20;
 
-let seed = "AMOGUS";
+let seed = "bl";
 seedNum = "";
 for (let j=0;(j<seed.length && j < 8);j++)
 seedNum += abc.indexOf(seed[j]);
@@ -10,6 +10,7 @@ seedNum = new Random(+seedNum);
 let mode;
 gen(0);
 gen(1);
+startRoom = obmen[1];
 gen(2);
 
 function gen(n) {
@@ -39,7 +40,6 @@ if (mode == 2) type[startRoom] = obmen[0];
   bigRoom = 0;
   while (floorplanCount[3] <= maxrooms && ochered.length > 0) {
   i = ochered.shift();
-  placed = false;
   x = i % 10; 
    if (x > 0) 
    visit(i - 1,type[i]);
@@ -50,7 +50,7 @@ if (mode == 2) type[startRoom] = obmen[0];
    if (i < 90)
    visit(i + 10,type[i]);
    }
-  if (loop < maxloop || floorplanCount[3] < minrooms) {
+  if (loop < maxloop || floorplanCount[3] < minrooms || endCount() < 4) {
   start.apply(this); 
   return;
   }
@@ -63,10 +63,19 @@ if (mode == 2) type[startRoom] = obmen[0];
   obmen = [type[arr[0]+9],...arr];
   }
   if (mode == 2) {
-    if (floorplan[obmen[1]] != 5 || floorplan[obmen[2]] != 5|| !nCount(obmen[1]) || !nCount(obmen[2]) || floorplan[obmen[2]+1] != 5 || floorplan[obmen[1]+1] != 5) {
+    if (floorplan[obmen[1]] != 5 || floorplan[obmen[2]] != 5 || !nCount(obmen[1]) || !nCount(obmen[2]) || floorplan[obmen[2]+1] != 5 || floorplan[obmen[1]+1] != 5) {
     start.apply(this);
     return;
   }}
+}
+
+function endCount() {
+    let c = 0;
+    for (let i=0; i<99; i++) {
+        if (nCount(i) && floorplan[i] == 5)
+        c++;
+    }
+    return c;
 }
 
 function arrSide(num) {
@@ -166,7 +175,7 @@ function visit(j,from) {
     if (floorplan[j] == undefined || floorplan[j] > 4)
         return;
 
-    if (random() < 0.5 && j != startRoom + 10)
+    if (random() < 0.5 && (j != startRoom + 10 || mode == 2))
         return;
         
     if (floorplan[j] > 1 && loop >= maxloop)

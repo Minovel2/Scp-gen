@@ -27,6 +27,7 @@ function floor(f,j = 1) {
 }
 
 function start() {
+  for (let k = 0; k < 10000; k++) {
 floor((i) => floorplan[i] = 0);
 floorplanCount = [0,0,0,0];
 endrooms.length = 0;
@@ -39,8 +40,8 @@ if (mode == 2) type[startRoom] = obmen[0];
   loop = 0;
   bigRoom = 0;
   while (floorplanCount[3] <= maxrooms && ochered.length > 0) {
-  i = ochered.shift();
-  x = i % 10; 
+  let i = ochered.shift();
+  let x = i % 10; 
    if (x > 0) 
    visit(i - 1,type[i]);
    if (x < 9) 
@@ -51,24 +52,22 @@ if (mode == 2) type[startRoom] = obmen[0];
    visit(i + 10,type[i]);
    }
   if (loop < maxloop || floorplanCount[3] < minrooms || endCount() < 4) {
-  start.apply(this); 
-  return;
+  continue;
   }
   if (mode == 1) {
     let arr = arrSide(13);
     if (Math.abs(floorplanCount[1] - floorplanCount[2]) > 10 || arr.length < 2 || type[arr[0]] != type[arr[1]]) {
-  start.apply(this);
-  return;
+  continue;
   }
   obmen = [type[arr[0]+9],...arr];
   }
   if (mode == 2) {
     if (floorplan[obmen[1]] != 5 || floorplan[obmen[2]] != 5 || !nCount(obmen[1]) || !nCount(obmen[2]) || floorplan[obmen[2]+1] != 5 || floorplan[obmen[1]+1] != 5) {
-    start.apply(this);
-    return;
+    continue;
   }}
+  break;
+  }
 }
-
 function endCount() {
     let c = 0;
     for (let i=0; i<99; i++) {

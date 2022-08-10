@@ -1,8 +1,24 @@
-let startRoom = 45,type = [],obmen = [],seedNum,degr = [0,1,0,2,0,1,0,3,3,1,3,2,2,1,0],abc = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЬьЫыЭэЮюЯя",floorplan = [], docking = [],i,ochered = [],endrooms = [],floorplanCount,x, x1, count,loop, bigRoom,maxloop = 2, maxBigRoom = 3;
+function strRepl(str) {
+  let from = "укехаросмУКЕНХВАРОСМИТ0ёЁЙ3", to = "ykexapocmYKEHXBAPOCMNTOeENЗ";
+  for (let i=0;i<str.length;i++) {
+    if (from.includes(str[i])) {
+      str = str.replaceAt(i,to[from.indexOf(str[i])]);
+    }
+  }
+  return str;
+}
+
+String.prototype.replaceAt = function(index, replacement) {
+  return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+}
+
+let startRoom = 45,type = [],obmen = [],seedNum,degr = [0,1,0,2,0,1,0,3,3,1,3,2,2,1,0],floorplan = [], docking = [],i,ochered = [],endrooms = [],floorplanCount,x, x1, count,loop, bigRoom,maxloop = 2, maxBigRoom = 3;
 let maxrooms = 50;
 let minrooms = 20;
+let abc = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЬьЫыЭэЮюЯя";
 
-let seed = "bl";
+let seed = "ИN";
+seed = strRepl(seed);
 seedNum = "";
 for (let j=0;(j<seed.length && j < 8);j++)
 seedNum += abc.indexOf(seed[j]);
@@ -30,9 +46,9 @@ function start() {
   for (let k = 0; k < 10000; k++) {
 floor((i) => floorplan[i] = 0);
 floorplanCount = [0,0,0,0];
-endrooms.length = 0;
-type.length = 0;
-ochered.length = 0;
+endrooms = [];
+type = [];
+ochered = [];
 nAdd(startRoom);
 if (mode == 1) hard(startRoom);
 if (mode == 2) type[startRoom] = obmen[0];
@@ -55,7 +71,7 @@ if (mode == 2) type[startRoom] = obmen[0];
   continue;
   }
   if (mode == 1) {
-    let arr = arrSide(13);
+    let arr = arrSide();
     if (Math.abs(floorplanCount[1] - floorplanCount[2]) > 10 || arr.length < 2 || type[arr[0]] != type[arr[1]]) {
   continue;
   }
@@ -74,10 +90,11 @@ function endCount() {
         if (nCount(i) && floorplan[i] == 5)
         c++;
     }
+    if (mode == 1 || mode == 2) c -= 2;
     return c;
 }
 
-function arrSide(num) {
+function arrSide() {
     let room1 = [],room2 = [];
   for (let i = 0;i < 10; i++) {
     if (nCount(i*10 + 9) && floorplan[i*10+8] == 5 && floorplan[i*10 + 9] == 5) {
@@ -88,8 +105,6 @@ function arrSide(num) {
   if (room1.length < 2 && room2.length < 2) return [0];
   let arr = room2.length >= room1.length ? room2 : room1;
   shuffle(arr);
-  floorplan[arr[0] + 9] = num;
-  floorplan[arr[1] + 9] = num;
   return arr;
 }
 
@@ -211,7 +226,7 @@ function visit(j,from) {
     return;
 }
 function bigR(j,from) {
-  if (bigRoom < maxBigRoom && random() < 0.6 && floorplan[j] == 2) {
+  if (bigRoom < maxBigRoom && random() < 0.4 && floorplan[j] == 2) {
     bigRoom++;
     nAdd(j,from);
   }
@@ -278,6 +293,8 @@ floorplan[endrooms.shift()] = 1;
   map1(straight,11,2,5);
   }
   if (mode == 1) {
+      floorplan[endrooms.splice(endrooms.indexOf(obmen[1]+9),1)] = 13;
+      floorplan[endrooms.splice(endrooms.indexOf(obmen[2]+9),1)] = 13;
       floorplan[startRoom] = 18;
       floorplan[endrooms.pop()] = 14;
       floorplan[endrooms.shift()] = 14;
@@ -314,4 +331,11 @@ floorplan[endrooms.shift()] = 1;
         floorplan[endrooms[i]] = random(2)+30;
       }
   }
+}
+function makeseed() {
+  let seed = "";
+  for (let j=0;j<8;j++) {
+    seed += abc[Math.floor(Math.random()*abc.length)];
+  }
+  return seed;
 }

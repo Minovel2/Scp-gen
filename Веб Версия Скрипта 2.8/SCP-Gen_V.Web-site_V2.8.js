@@ -89,9 +89,9 @@ setInterval(() => {
     fillTable('clear');
     seed = document.getElementById("seed").value;
     if (!seed) {
+	    seed = makeseed();
+    }
             seedNum = "";
-            seed = makeseed();
-           // seed = "DimaMirov";
             seed = strRepl(seed);
             for (let j=0;(j<seed.length && j < 8);j++)
             seedNum += abc.indexOf(seed[j]);

@@ -87,6 +87,7 @@ fillTable();
 setInterval(() => {
   if (scores != 0) {
     fillTable('clear');
+    seed = document.getElementById("seed").value;
     if (!seed) {
             seedNum = "";
             seed = makeseed();

@@ -87,11 +87,10 @@ fillTable();
 setInterval(() => {
   if (scores != 0) {
     fillTable('clear');
-    seed = document.getElementById("seed").value;
     if (!seed) {
-	    seed = makeseed();
-    }
             seedNum = "";
+            seed = makeseed();
+           // seed = "DimaMirov";
             seed = strRepl(seed);
             for (let j=0;(j<seed.length && j < 8);j++)
             seedNum += abc.indexOf(seed[j]);
@@ -114,7 +113,6 @@ if (mode == 0) floorCopy(zoneL);
 if (mode == 1) floorCopy(zoneH);
 if (mode == 2) floorCopy(zoneO);
 visual();
-//place();
 console.log(`Сид: ${seed} ; Колец: ${loop} ; Биг рум: ${bigRoom} ; Количество: ${floorplanCount[3]}`);
     }
 }
@@ -505,22 +503,6 @@ floorplan[endrooms.shift()] = 1;
         floorplan[endrooms[i]] = random(2)+30;
       }
   }
-}
-function place() {
-    let startX = startRoom % 10;
-    let startY = (startRoom - startX) / 10;
-    let num = [1,1,3,1,5,3,7,1,3,5,7,3,7,7,15],rooms = ["D-class","exit_L","SCP-173","office","toilet","corridor_L","SCP-914","SCP-372","SCP-012","armory_L","gateway","greenhouse","corridor_H","exit_H","elevator","SCP-096","SCP-049","alpha","server","SCP-079","tesla","SCP-939","HID","armory_H","SCP-106","corridor_O","exit_O","gates_A","gates_B","shelter","impasse_Big","impasse_Small","intercom","office_Big","office_Medium","office_Small","corridor_conference"];
-    for (let j=0;j<100;j++) {
-        let x1 = j % 10;
-        let y1 = (j - x1) / 10;
-        if (docking[j]) {
-            try {
-              over.runCommand(`structure load ${rooms[floorplan[j]]}_${num[docking[j]-1]} ${centreX + (startX -x1)*26} ${z1} ${centreY + (startY-y1)*26} ${degr[docking[j]-1]*90}_degrees`)
-            } catch {
-                console.warn(`${docking[j]} [${j}]`);
-            }
-        }
-    }
 }
 
 function strRepl(str) {

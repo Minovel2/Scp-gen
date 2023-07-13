@@ -5,7 +5,7 @@ let nextStep = false;
 let maxloop = 2;
 let scores = 0, btnCounter = 0;
 
-document.getElementById("circle").textContent = "Колец: " + maxloop;
+const circleElement = document.getElementById("circle");
 const button = document.getElementById("btn");
 const buttonTexts = ["лёгкую зону", "тяжёлую зону", "офисы"];
 const input = document.getElementById("seed");
@@ -115,6 +115,7 @@ setInterval(() => {
       seedNum = new Random(+seedNum);
     }
     seedText.textContent = "Сид: " + seed;
+    circleElement.textContent = "Колец: " + maxloop;
     gen(scores - 1);
     scores = 0;
         }

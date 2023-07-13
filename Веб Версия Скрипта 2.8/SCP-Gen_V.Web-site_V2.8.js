@@ -3,7 +3,7 @@ let maxrooms = 50, x1;
 let minrooms = 20;
 let nextStep = false;
 let maxloop = 2;
-let scores;
+let scores = 0;
 
 const fillTable = (mode='fill') => { //в зависимости от параметра mode эта функция либо БУДЕТ СТРОИТЬ ТАБЛИЦУ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ либо БУДЕТ ОЧИЩАТЬ ЗАПОЛНИНУЮ ТАБЛИЦУ И БУДЕТ ЗАПОЛНЯТЬ ЕЁ ПУСТЫМИ ЯЧЕЙКАМИ
 	if (mode=='clear') {

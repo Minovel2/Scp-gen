@@ -5,10 +5,13 @@ let nextStep = false;
 let maxloop = 2;
 let scores = 0, btnCounter = 0;
 
+document.getElementById("circle").textContent = "Колец: " + maxloop;
 const button = document.getElementById("btn");
 const buttonTexts = ["лёгкую зону", "тяжёлую зону", "офисы"];
 const input = document.getElementById("seed");
 const h4 = document.querySelector("h4");
+const seedText = document.getElementById("seedText");
+
 input.placeholder = makeseed();
 
 button.addEventListener("click", () => {
@@ -111,6 +114,7 @@ setInterval(() => {
       seedNum += abc.indexOf(seed[j]);
       seedNum = new Random(+seedNum);
     }
+    seedText.textContent = "Сид: " + seed;
     gen(scores - 1);
     scores = 0;
         }

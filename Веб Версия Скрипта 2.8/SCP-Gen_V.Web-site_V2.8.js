@@ -87,15 +87,13 @@ fillTable();
 setInterval(() => {
   if (scores != 0) {
     fillTable('clear');
-    if (!seed) {
             seedNum = "";
-            seed = makeseed();
+            seed = document.getElementById("seed")?.value || makeseed();
            // seed = "DimaMirov";
             seed = strRepl(seed);
             for (let j=0;(j<seed.length && j < 8);j++)
             seedNum += abc.indexOf(seed[j]);
             seedNum = new Random(+seedNum);
-            }
             scores = 0;
             gen(scores - 1);
         }

@@ -1,9 +1,20 @@
-let startRoom = 45,mode,seed,type = [],obmen = [],seedNum,degr = [0,1,0,2,0,1,0,3,3,1,3,2,2,1,0],abc = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЬьЫыЭэЮюЯя",floorplan = [], docking = [],ochered = [],endrooms = [],floorplanCount,generatorOn = false,genCount = 0,count,loop,g,zoneL={},zoneH={},zoneO={}, bigRoom, maxBigRoom = 3;
-let maxrooms = 50, x1;
-let minrooms = 20;
+let startRoom = 45,mode,x1,seed,type = [],obmen = [],seedNum,degr = [0,1,0,2,0,1,0,3,3,1,3,2,2,1,0],abc = " 0123456789|.,!№;%:?-=+;:~><|*()/AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЬьЫыЭэЮюЯяІіЇїЄє",floorplan = [], docking = [],ochered = [],endrooms = [],floorplanCount,generatorOn = false,genCount = 0,count,loop,g,zoneL={},zoneH={},zoneO={}, bigRoom, maxBigRoom = 3;
+let maxrooms = 50;
+let minrooms = 30;
+let loopObject = {
+  max: [],
+  min: [],
+  count: 0,
+  typesCount: [0,0,0],
+}
 let nextStep = false;
-let maxloop = 2;
 let scores = 0, btnCounter = 0;
+
+function setLoopSettings(min, max) {
+  loopObject.max = [...max];
+  loopObject.min = [...min];
+  loopObject.count = max.length;
+}
 
 const circleElement = document.getElementById("circle");
 const button = document.getElementById("btn");
@@ -110,33 +121,36 @@ setInterval(() => {
       seed = document.getElementById("seed")?.value || input.placeholder;
       // seed = "DimaMirov";
       seed = strRepl(seed);
+      console.log(seed)
       for (let j=0;(j<seed.length && j < 8);j++)
       seedNum += abc.indexOf(seed[j]);
+      console.log(seedNum)
       seedNum = new Random(+seedNum);
     }
     seedText.textContent = "Сид: " + seed;
-    circleElement.textContent = "Колец: " + maxloop;
+    circleElement.textContent = "Колец: " + loopObject.count;
     gen(scores - 1);
     scores = 0;
         }
   //-------------------------
-  if (generatorOn && genCount < 200) {
+  if (generatorOn && genCount < 10000) {
     genCount++;
     start();
     if (nextStep) {
 genCount = 0;
 generatorOn = false;
 nextStep = false;
+console.log("end: " + endCount())
 dock();
 mapping();
 if (mode == 0) floorCopy(zoneL);
 if (mode == 1) floorCopy(zoneH);
 if (mode == 2) floorCopy(zoneO);
 visual();
-console.log(`Сид: ${seed} ; Колец: ${loop} ; Биг рум: ${bigRoom} ; Количество: ${floorplanCount[3]}`);
+console.log(`Сид: ${seed} ; Колец: ${loop} ; Биг рум: ${loopObject.typesCount} ; Количество: ${floorplanCount[3]}`);
     }
 }
-}, 25);
+}, 1);
 
 
 function makeseed() {
@@ -147,6 +161,13 @@ function makeseed() {
   return seed;
 }
 function gen(n) {
+  if (n == 0) {
+    setLoopSettings([8,15,8], [9,16,9])
+  } else if (n == 1) {
+    setLoopSettings([8,8,8], [15,15,15])
+  } else if (n == 2) {
+    setLoopSettings([8,8], [99,99])
+  }
   if (n == 2) startRoom = obmen[1] || 45;
   else startRoom = 45;
   mode = n;
@@ -229,7 +250,8 @@ function unDock(mother, j) {
     g = [];
     line(floorplan,5,x1,j,() => unDock2(mother,j,j - 1,8),() => unDock2(mother,j,j + 1,2),() => unDock2(mother,j,j - 10,1),() => unDock2(mother,j,j + 10,4));
     
-    if (circle > 7 && loop < maxloop) {
+    if (circle >= loopObject.min[loop] && circle <= loopObject.max[loop] && loop < loopObject.count) {
+        loopObject.typesCount[type[mother]] += 1;
         loop++;
         line(floorplan,5,x1,j,() => f(mother,j,j - 1,8),() => f(mother,j,j + 1,2),() => f(mother,j,j - 10,1),() => f(mother,j,j + 10,4));
         let n = g[random(g.length)];
@@ -254,6 +276,7 @@ function floorCopy(obj) {
 
 function start() {
   for (let k = 0; k < 50; k++) {
+    loopObject.typesCount = [0,0,0]
 floor((i) => floorplan[i] = 0);
 floor((i) => docking[i] = 0);
 floorplanCount = [0,0,0,0];
@@ -278,7 +301,7 @@ if (mode == 2) type[startRoom] = obmen[0];
    if (i < 90)
    visit(i + 10,i);
    }
-  if (loop < maxloop || floorplanCount[3] < minrooms || endCount() < 4) {
+  if (loop < loopObject.count || floorplanCount[3] < minrooms || endCount() < 4) {
   continue;
   }
   if (mode == 1) {
@@ -289,7 +312,7 @@ if (mode == 2) type[startRoom] = obmen[0];
   obmen = [type[arr[0]+9],...arr];
   }
   if (mode == 2) {
-    if (floorplan[obmen[1]] != 5 || floorplan[obmen[2]] != 5 || !nCount(obmen[1]) || !nCount(obmen[2]) || floorplan[obmen[2]+1] != 5 || floorplan[obmen[1]+1] != 5) {
+    if (floorplan[obmen[1]] != 5 || floorplan[obmen[2]] != 5 || !nCount(obmen[1]) || !nCount(obmen[2]) || floorplan[obmen[2]+1] != 5 || floorplan[obmen[1]+1] != 5 || getDir(-docking[obmen[1]]).includes(2) || getDir(-docking[obmen[2]]).includes(2)) {
     continue;
   }}
   nextStep = true;
@@ -298,25 +321,34 @@ if (mode == 2) type[startRoom] = obmen[0];
 }
 
 function endCount() {
-    let c = 0;
+  let res = 0;
     for (let i=0; i<100; i++) {
-        if (nCount(i) && floorplan[i] == 5)
-        c++;
+        if (floorplan[i] == 5) {
+          count = 0;
+          let x1 = i % 10;
+          let d = docking[i] || 0;
+          line(floorplan,5,x1,i,() => count++)
+          count -= getDir(-d).length;
+          if (count == 1)
+          res += 1;
+        }
     }
-    if (mode == 1 || mode == 2) c -= 2;
-    return c;
+    if (mode == 1 || mode == 2) res -= 2;
+    return res;
 }
 
 function arrSide() {
     let room1 = [],room2 = [];
   for (let i = 0;i < 10; i++) {
-    if (nCount(i*10 + 9) && floorplan[i*10+8] == 5 && floorplan[i*10 + 9] == 5) {
+    if (nCount(i*10 + 9) && floorplan[i*10+8] == 5 && floorplan[i*10 + 9] == 5 && !getDir(-docking[i*10 + 9]).includes(8)) {
         if (type[i*10+9] == 1) room1.push(i*10);
         if (type[i*10+9] == 2) room2.push(i*10);
     }
   }
   if (room1.length < 2 && room2.length < 2) return [0];
   let arr = room2.length >= room1.length ? room2 : room1;
+  if (circleLength(arr[0]+9,arr[1]+9) <= 7) return [0];
+  console.log("тут " + circleLength(arr[0]+9,arr[1]+9))
   shuffle(arr);
   return arr;
 }
@@ -352,7 +384,9 @@ function nCount(i) {
   let x1 = i % 10;
   count = 0;
   let d = docking[i] || 0;
-  line(floorplan,5,x1,i,() => count++)
+  line(floorplan,5,x1,i,() => count++);
+  if (d < 0)
+  count -= getDir(-d).length;
   if (count == 1 || (d==1 || d==2 || d==4 || d==8))
     return true;
     
@@ -391,13 +425,13 @@ function visit(j,from) {
     if (random() < 0.5 && (j != startRoom + 10 || mode == 2))
         return;
         
-    if (floorplan[j] > 1 && loop >= maxloop)
+    if (floorplan[j] > 1 && loop >= loopObject.count)
         return;
         
     if (floorplanCount[3] >= maxrooms)
         return;
   
-    if (loop < maxloop) {
+    if (loop < loopObject.count) {
       x1 = j % 10;
          if (x1 > 0 && floorplan[j-1] + floorplan[j+9] + floorplan[j+10] > 14) {
            bigR(j,from);
@@ -527,7 +561,7 @@ floorplan[endrooms.shift()] = 1;
 }
 
 function strRepl(str) {
-  let from = "укехаросмУКЕНХВАРОСМИТ0ёЁЙ3", to = "ykexapocmYKEHXBAPOCMNTOeENЗ";
+  let from = "уехаросіУКЕНХВАРОСМИТ0ЁЙ3І", to = "yexapociYKEHXBAPOCMNTOENЗI";
   for (let i=0;i<str.length;i++) {
     if (from.includes(str[i])) {
       str = str.replaceAt(i,to[from.indexOf(str[i])]);

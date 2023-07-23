@@ -348,7 +348,7 @@ function arrSide() {
   if (room1.length < 2 && room2.length < 2) return [0];
   let arr = room2.length >= room1.length ? room2 : room1;
   if (circleLength(arr[0]+9,arr[1]+9) <= 7) return [0];
-  console.log("тут " + circleLength(arr[0]+9,arr[1]+9))
+  //console.log("тут " + circleLength(arr[0]+9,arr[1]+9))
   shuffle(arr);
   return arr;
 }
